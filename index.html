@@ -510,15 +510,41 @@ async function logout() {
 // ══════════════════════════════
 // INIT
 // ══════════════════════════════
-sb.auth.onAuthStateChange(async (event, session) => {
+function showAuth() {
   document.getElementById('loading').style.display = 'none';
-  if (session) {
-    currentUser = session.user;
-    document.getElementById('auth-screen').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    await loadAll();
-    renderGrid();
-  } else {
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('auth-screen').style.display = 'flex';
+}
+
+async function showApp(user) {
+  currentUser = user;
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  await loadAll();
+  renderGrid();
+}
+
+// Сначала проверяем текущую сессию напрямую
+(async () => {
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) {
+      await showApp(session.user);
+    } else {
+      showAuth();
+    }
+  } catch(e) {
+    console.error('Session check failed:', e);
+    showAuth();
+  }
+})();
+
+// Слушаем изменения (логин/логаут)
+sb.auth.onAuthStateChange(async (event, session) => {
+  if (event === 'SIGNED_IN' && session) {
+    await showApp(session.user);
+  } else if (event === 'SIGNED_OUT') {
     currentUser = null;
     document.getElementById('app').style.display = 'none';
     document.getElementById('auth-screen').style.display = 'flex';

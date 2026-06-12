@@ -670,7 +670,7 @@ function renderHabits(){
         var isFut=k>td;
         var cls='dc'+(isDone?' s80':'')+(isTd?' today':'')+(isFut?' fut':'');
         if(!isFut){
-          mHtml+='<div class="'+cls+'" onclick="toggleH(''+h.id+'',''+k+'')">'+dd+'</div>';
+          mHtml+='<div class="'+cls+'" data-hid="'+h.id+'" data-key="'+k+'" onclick="thClick(this)">'+dd+'</div>';
         }else{
           mHtml+='<div class="'+cls+'">'+dd+'</div>';
         }
@@ -682,9 +682,25 @@ function renderHabits(){
       '<div style="display:flex;align-items:center;gap:8px">'+
       '<span class="hname">'+h.name+'</span>'+
       '<span class="hpct">'+pct+'%</span></div>'+
-      '<button class="hdel" onclick="removeHabit(''+h.id+'')">удалить</button></div>'+mHtml;
+      '<button class="hdel" data-rid="'+h.id+'" onclick="rhClick(this)">удалить</button></div>'+mHtml;
     el.appendChild(item);
   });
+}
+function rhClick(el){removeHabit(el.getAttribute('data-rid'));}
+function tgClick(el){toggleGT(el.getAttribute('data-gid'),parseInt(el.getAttribute('data-ti')));}
+function dgClick(el){delGT(el.getAttribute('data-gid'),parseInt(el.getAttribute('data-ti')));}
+function agClick(el){addGT(el.getAttribute('data-gid'));}
+function sgClick(el){saveGPct(el.getAttribute('data-gid'));}
+function dgbClick(el){delGoal(el.getAttribute('data-gid'));}
+function ttClick(el){toggleTask(el.getAttribute('data-tid'));}
+function dtClick(el){delTask(el.getAttribute('data-tid'));}
+function tsClick(el){toggleShop(el.getAttribute('data-sid'));}
+function dsClick(el){delShop(el.getAttribute('data-sid'));}
+
+function thClick(el){
+  var hid=el.getAttribute('data-hid');
+  var key=el.getAttribute('data-key');
+  toggleH(hid,key);
 }
 async function toggleH(hid,key){
   if(!cache.habitLogs[hid]) cache.habitLogs[hid]={};
@@ -951,24 +967,24 @@ function renderGoals(){
     if(g.tasks&&g.tasks.length){
       g.tasks.forEach(function(t,ti){
         tHtml+='<div class="gc-task">';
-        tHtml+='<div class="tcheck'+(t.done?' on':'')+'" onclick="toggleGT(''+g.id+'','+ti+')">'+(t.done?chk('#a78bfa'):'')+'</div>';
-        tHtml+='<span class="ttext'+(t.done?' done':'")>'+t.text+'</span>';
-        tHtml+='<button class="tdel" onclick="delGT(''+g.id+'','+ti+')">x</button>';
+        tHtml+='<div class="tcheck'+(t.done?' on':'')+'" data-gid="'+g.id+'" data-ti="'+ti+'" onclick="tgClick(this)">'+(t.done?chk('#a78bfa'):'')+'</div>';
+        tHtml+='<span class="ttext'+(t.done?' done':'')+'">'+t.text+'</span>';
+        tHtml+='<button class="tdel" data-gid="'+g.id+'" data-ti="'+ti+'" onclick="dgClick(this)">x</button>';
         tHtml+='</div>';
       });
     }
     tHtml+='<div style="display:flex;gap:5px;margin-top:5px">';
     tHtml+='<input class="inp inp-sm" id="gti_'+g.id+'" placeholder="+ подзадача" style="flex:1">';
-    tHtml+='<button class="btn-pri" onclick="addGT(''+g.id+'')" style="padding:4px 8px">+</button>';
+    tHtml+='<button class="btn-pri" data-gid="'+g.id+'" onclick="agClick(this)" style="padding:4px 8px">+</button>';
     tHtml+='</div></div>';
     var pctRow='<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">';
     pctRow+='<input class="cat-inp" type="number" min="0" max="100" id="gpi_'+g.id+'" value="'+(g.manual_pct||0)+'" style="width:48px">';
     pctRow+='<span style="font-size:10px;color:var(--text2)">% вручную</span>';
-    pctRow+='<button class="btn-ghost" onclick="saveGPct(''+g.id+'')" style="padding:3px 7px;font-size:10px">ок</button>';
+    pctRow+='<button class="btn-ghost" data-gid="'+g.id+'" onclick="sgClick(this)" style="padding:3px 7px;font-size:10px">ок</button>';
     pctRow+='</div>';
     card.innerHTML=
       '<div class="gc-top"><span class="gc-title">'+g.title+'</span>'+
-      '<button class="gc-del-btn" onclick="delGoal(''+g.id+'')">x</button></div>'+
+      '<button class="gc-del-btn" data-gid="'+g.id+'" onclick="dgbClick(this)">x</button></div>'+
       '<div class="gc-meta">'+metaHtml+'</div>'+
       '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">'+
       '<span style="font-size:10px;color:var(--text2)">Прогресс</span>'+
@@ -1097,12 +1113,12 @@ function renderTasks(){
       }
       var div=document.createElement('div');
       div.className='task-item'+(task.done?' done-item':'');
-      var inner='<div class="t-check'+(task.done?' on':'')+'" onclick="toggleTask(''+task.id+'')">'+(task.done?chk('#a78bfa'):'')+'</div>';
-      inner+='<span class="t-text'+(task.done?' done':'")>'+task.text+'</span>';
+      var inner='<div class="t-check'+(task.done?' on':'')+'" data-tid="'+task.id+'" onclick="ttClick(this)">'+(task.done?chk('#a78bfa'):'')+'</div>';
+      inner+='<span class="t-text'+(task.done?' done':'')+'">'+task.text+'</span>';
       inner+='<div style="display:flex;align-items:center;gap:4px;flex-shrink:0">';
       inner+='<div class="t-dot" style="background:'+cat.c+'"></div>';
       if(dl) inner+='<span class="'+dc+'">'+dl+'</span>';
-      inner+='<button class="t-del" onclick="delTask(''+task.id+'')">x</button>';
+      inner+='<button class="t-del" data-tid="'+task.id+'" onclick="dtClick(this)">x</button>';
       inner+='</div>';
       div.innerHTML=inner;
       g.appendChild(div);
@@ -1153,10 +1169,10 @@ function renderShop(){
   cache.shopping.forEach(function(item){
     var div=document.createElement('div');
     div.className='shop-item'+(item.bought?' bought':'');
-    div.innerHTML='<div class="s-check'+(item.bought?' on':'')+'" onclick="toggleShop(''+item.id+'')">'+(item.bought?chk('#34d399'):'')+'</div>'+
+    div.innerHTML='<div class="s-check'+(item.bought?' on':'')+'" data-sid="'+item.id+'" onclick="tsClick(this)">'+(item.bought?chk('#34d399'):'')+'</div>'+
       '<span class="s-name">'+item.name+'</span>'+
       (item.qty?'<span class="s-qty">'+item.qty+'</span>':'')+
-      '<button class="s-del" onclick="delShop(''+item.id+'')">x</button>';
+      '<button class="s-del" data-sid="'+item.id+'" onclick="dsClick(this)">x</button>';
     list.appendChild(div);
   });
   var cnt=document.getElementById('shop-count');

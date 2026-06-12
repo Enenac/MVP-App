@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>MVP</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
-  --bg:#0d0f1e;--s3:#1c1f35;--s4:#22263e;
+  --bg:#0d0f1e;--s3:#1c1f35;
   --accent:#a78bfa;--ora:#fb923c;--pnk:#f472b6;--grn:#34d399;--blu:#60a5fa;
   --text:#e8e8f8;--text2:#6b7099;--text3:#9a9dc0;
   --bord:rgba(255,255,255,.08);--bord2:rgba(255,255,255,.12);
@@ -20,8 +20,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .orb{position:fixed;border-radius:50%;pointer-events:none;z-index:0}
 .orb1{width:400px;height:400px;top:-100px;left:-80px;background:radial-gradient(circle,rgba(120,80,255,.3) 0%,transparent 70%)}
 .orb2{width:320px;height:320px;bottom:60px;right:-60px;background:radial-gradient(circle,rgba(255,100,60,.22) 0%,transparent 70%)}
-
-/* AUTH */
+#loading{position:fixed;inset:0;z-index:150;display:flex;align-items:center;justify-content:center;background:var(--bg);font-size:12px;color:var(--text2);flex-direction:column;gap:8px}
+.spin{width:24px;height:24px;border:2px solid rgba(167,139,250,.2);border-top-color:#a78bfa;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 #auth-screen{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;background:var(--bg)}
 .auth-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:20px;backdrop-filter:blur(24px);padding:28px 24px;width:100%;max-width:320px}
 .auth-logo{font-size:22px;font-weight:700;background:linear-gradient(135deg,#a78bfa,#fb923c);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;margin-bottom:6px;letter-spacing:2px}
@@ -32,15 +33,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .auth-inp{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--text);padding:9px 12px;border-radius:10px;font-size:13px;outline:none;margin-bottom:10px;font-family:inherit}
 .auth-inp:focus{border-color:rgba(167,139,250,.5)}
 .auth-inp::placeholder{color:var(--text2)}
-.auth-btn{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(167,139,250,.4);background:rgba(139,92,246,.2);color:#c4b5fd;font-size:13px;font-weight:500;cursor:pointer;transition:.15s;font-family:inherit;margin-top:4px}
+.auth-btn{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(167,139,250,.4);background:rgba(139,92,246,.2);color:#c4b5fd;font-size:13px;font-weight:500;cursor:pointer;transition:.15s;font-family:inherit}
 .auth-btn:hover{background:rgba(139,92,246,.35);color:#fff}
-.auth-err{font-size:11px;color:#f87171;text-align:center;margin-top:8px;min-height:16px}
-
-/* LOADING */
-#loading{position:fixed;inset:0;z-index:150;display:flex;align-items:center;justify-content:center;background:var(--bg);font-size:12px;color:var(--text2)}
-
-/* LAYOUT */
-.layout{display:flex;height:100vh;height:100dvh;position:relative;z-index:1;padding-bottom:0}
+.auth-btn:disabled{opacity:.5;cursor:default}
+.auth-msg{font-size:11px;text-align:center;margin-top:8px;min-height:16px}
+.layout{display:flex;height:100vh;height:100dvh;position:relative;z-index:1}
 @media(max-width:600px){.layout{padding-bottom:60px}}
 .sidebar{width:64px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;padding:16px 0;gap:4px;background:rgba(255,255,255,.03);border-right:1px solid var(--bord);backdrop-filter:blur(20px)}
 @media(max-width:600px){.sidebar{display:none}}
@@ -59,8 +56,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .main{flex:1;overflow-y:auto;min-width:0;padding:14px;-webkit-overflow-scrolling:touch}
 @media(max-width:600px){.main{padding:10px}}
 .section{display:none}.section.active{display:block}
-
-/* GLASS */
 .g{background:var(--glass);border:1px solid var(--bord);border-radius:14px;backdrop-filter:blur(20px)}
 .p12{padding:12px}.p14{padding:14px}.mb8{margin-bottom:8px}.mb10{margin-bottom:10px}.mb12{margin-bottom:12px}
 .slabel{font-size:9px;color:var(--text2);letter-spacing:.8px;margin-bottom:10px}
@@ -70,7 +65,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .inp-sm{font-size:11px;padding:5px 8px}
 .lbl{font-size:10px;color:var(--text2);margin-bottom:3px}
 .btn-pri{padding:7px 14px;border-radius:9px;border:1px solid rgba(167,139,250,.4);background:rgba(139,92,246,.15);color:#c4b5fd;font-size:12px;font-weight:500;cursor:pointer;transition:.15s;white-space:nowrap;font-family:inherit}
-.btn-pri:hover,.btn-pri:active{background:rgba(139,92,246,.3);color:#fff}
+.btn-pri:hover{background:rgba(139,92,246,.3);color:#fff}
 .btn-ghost{padding:5px 10px;border-radius:7px;border:1px solid var(--bord2);background:transparent;color:var(--text2);font-size:11px;cursor:pointer;transition:.15s;font-family:inherit}
 .btn-ghost:hover{background:var(--glass2);color:var(--text)}
 .chip-row{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
@@ -82,11 +77,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
 @media(max-width:480px){.two-col{grid-template-columns:1fr}}
 .empty-state{color:var(--text2);font-size:12px;padding:8px 0 12px}
-.saving{font-size:10px;color:var(--text2);text-align:right;margin-bottom:4px;min-height:14px}
-
-/* DAYS */
 .months-wrap{display:flex;gap:12px;flex-wrap:wrap}
-.month-block{}
 .mlbl{font-size:9px;color:var(--text2);margin-bottom:4px;text-align:center;letter-spacing:.4px}
 .dow-row{display:grid;grid-template-columns:repeat(7,18px);gap:2px;margin-bottom:2px}
 .dlbl{width:18px;text-align:center;font-size:8px;color:var(--text2)}
@@ -113,8 +104,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .cat-inp:focus{border-color:rgba(167,139,250,.5)}
 .avg-row{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-radius:9px;background:var(--glass);border:1px solid var(--bord);margin:12px 0}
 .avg-val{font-size:20px;font-weight:600}
-
-/* HABITS */
 .habit-block{margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--bord)}
 .habit-block:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
 .htop{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
@@ -123,8 +112,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .hdel{background:transparent;border:1px solid var(--bord);color:var(--text2);padding:2px 7px;border-radius:5px;cursor:pointer;font-size:10px;transition:.15s;font-family:inherit}
 .hdel:hover{color:#f87171;border-color:#f87171}
 .hmonths{display:flex;gap:12px;flex-wrap:wrap}
-
-/* FINANCE */
 .bc-spent{font-size:24px;font-weight:600}
 .bc-bar{height:3px;border-radius:2px;background:var(--bord);overflow:hidden;margin:7px 0 4px}
 .bc-fill{height:100%;border-radius:2px;transition:.5s}
@@ -139,14 +126,12 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .de-inp{width:70px;background:var(--glass);border:1px solid var(--bord);color:var(--text);padding:4px 7px;border-radius:6px;font-size:12px;text-align:right;outline:none;font-family:inherit}
 .de-inp:focus{border-color:rgba(167,139,250,.4)}
 canvas{display:block;width:100%!important}
-
-/* GOALS */
 .goal-card{background:var(--glass);border:1px solid var(--bord);border-radius:12px;padding:12px;margin-bottom:8px}
-.goal-card.gc-done{border-color:rgba(52,211,153,.22);background:rgba(52,211,153,.03)}
-.goal-card.gc-over{border-color:rgba(248,113,113,.22);background:rgba(248,113,113,.03)}
+.goal-card.gc-done{border-color:rgba(52,211,153,.22)}
+.goal-card.gc-over{border-color:rgba(248,113,113,.22)}
 .gc-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px}
 .gc-title{font-size:13px;font-weight:500;flex:1;margin-right:6px;line-height:1.3}
-.gc-del-btn{background:transparent;border:none;color:var(--text2);cursor:pointer;font-size:15px;padding:0;line-height:1;transition:.15s}
+.gc-del-btn{background:transparent;border:none;color:var(--text2);cursor:pointer;font-size:15px;padding:0;line-height:1}
 .gc-del-btn:hover{color:#f87171}
 .gc-meta{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;align-items:center}
 .gc-bar{height:3px;border-radius:2px;background:var(--bord);overflow:hidden;margin-bottom:6px}
@@ -159,11 +144,9 @@ canvas{display:block;width:100%!important}
 .ttext.done{text-decoration:line-through;color:var(--text2)}
 .tdel{background:transparent;border:none;color:rgba(255,255,255,.15);cursor:pointer;font-size:12px;padding:0;transition:.15s}
 .tdel:hover{color:#f87171}
-
-/* TODO */
 .todo-cols{display:grid;grid-template-columns:1fr 290px;gap:8px;align-items:start}
 @media(max-width:700px){.todo-cols{grid-template-columns:1fr}}
-.task-item{display:flex;align-items:center;gap:7px;padding:8px 10px;border-radius:9px;background:var(--glass);border:1px solid var(--bord);margin-bottom:5px;transition:.15s}
+.task-item{display:flex;align-items:center;gap:7px;padding:8px 10px;border-radius:9px;background:var(--glass);border:1px solid var(--bord);margin-bottom:5px}
 .task-item.done-item{opacity:.4}
 .t-check{width:15px;height:15px;border-radius:4px;border:1px solid rgba(255,255,255,.2);background:transparent;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:.2s}
 .t-check.on{background:rgba(167,139,250,.3);border-color:var(--accent)}
@@ -184,14 +167,11 @@ canvas{display:block;width:100%!important}
 .s-qty{font-size:10px;color:var(--text2)}
 .s-del{background:transparent;border:none;color:rgba(255,255,255,.12);cursor:pointer;font-size:13px;padding:0 2px;transition:.15s}
 .s-del:hover{color:#f87171}
-
-/* STATS */
 .stat-mini{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
 .sm{background:var(--glass);border:1px solid var(--bord);border-radius:10px;padding:10px;text-align:center}
 .sm-n{font-size:18px;font-weight:600}
 .sm-l{font-size:9px;color:var(--text2);margin-top:2px;letter-spacing:.3px}
 .bar-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.bar-lbl{font-size:11px;color:var(--text3);width:56px;flex-shrink:0}
 .bar-track{flex:1;height:2px;border-radius:2px;background:var(--bord)}
 .bar-fill{height:100%;border-radius:2px;transition:.5s}
 .bar-val{font-size:11px;font-weight:500;width:26px;text-align:right}
@@ -200,27 +180,21 @@ canvas{display:block;width:100%!important}
 <body>
 <div class="orb orb1"></div>
 <div class="orb orb2"></div>
-
-<!-- LOADING -->
-<div id="loading">Загрузка...</div>
-
-<!-- AUTH -->
+<div id="loading"><div class="spin"></div><span>Загрузка...</span></div>
 <div id="auth-screen" style="display:none">
   <div class="auth-card">
     <div class="auth-logo">MVP</div>
     <div class="auth-sub">Планирование и контроль жизни</div>
     <div class="auth-tabs">
-      <button class="auth-tab act" onclick="setAuthTab('login',this)">Войти</button>
-      <button class="auth-tab" onclick="setAuthTab('signup',this)">Регистрация</button>
+      <button class="auth-tab act" onclick="setAuthMode('login',this)">Войти</button>
+      <button class="auth-tab" onclick="setAuthMode('signup',this)">Регистрация</button>
     </div>
     <input class="auth-inp" type="email" id="auth-email" placeholder="Email">
     <input class="auth-inp" type="password" id="auth-pass" placeholder="Пароль">
-    <button class="auth-btn" onclick="authAction()">Войти</button>
-    <div class="auth-err" id="auth-err"></div>
+    <button class="auth-btn" id="auth-btn" onclick="doAuth()">Войти</button>
+    <div class="auth-msg" id="auth-msg"></div>
   </div>
 </div>
-
-<!-- APP -->
 <div id="app" style="display:none">
 <div class="layout">
   <div class="sidebar">
@@ -244,14 +218,11 @@ canvas{display:block;width:100%!important}
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
     </div>
     <div class="sb-spacer"></div>
-    <button class="sb-logout" onclick="logout()" title="Выйти">
+    <button class="sb-logout" onclick="doLogout()" title="Выйти">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
     </button>
   </div>
-
   <div class="main">
-
-    <!-- DAYS -->
     <div class="section active" id="tab-days">
       <div class="chip-row">
         <button class="chip act" onclick="setPeriod(3,this)">3 мес</button>
@@ -261,17 +232,15 @@ canvas{display:block;width:100%!important}
       <div class="g p12 mb8">
         <div class="months-wrap" id="life-grid"></div>
         <div class="legend">
-          <span class="li"><span class="ld" style="background:rgba(139,92,246,.38);border:1px solid rgba(167,139,250,.55)"></span>≥80%</span>
-          <span class="li"><span class="ld" style="background:rgba(109,40,217,.28);border:1px solid rgba(139,92,246,.42)"></span>60–79</span>
-          <span class="li"><span class="ld" style="background:rgba(219,39,119,.22);border:1px solid rgba(236,72,153,.38)"></span>40–59</span>
-          <span class="li"><span class="ld" style="background:rgba(234,88,12,.22);border:1px solid rgba(251,146,60,.38)"></span>20–39</span>
+          <span class="li"><span class="ld" style="background:rgba(139,92,246,.38);border:1px solid rgba(167,139,250,.55)"></span>>=80%</span>
+          <span class="li"><span class="ld" style="background:rgba(109,40,217,.28);border:1px solid rgba(139,92,246,.42)"></span>60-79</span>
+          <span class="li"><span class="ld" style="background:rgba(219,39,119,.22);border:1px solid rgba(236,72,153,.38)"></span>40-59</span>
+          <span class="li"><span class="ld" style="background:rgba(234,88,12,.22);border:1px solid rgba(251,146,60,.38)"></span>20-39</span>
           <span class="li"><span class="ld" style="background:rgba(185,28,28,.22);border:1px solid rgba(239,68,68,.32)"></span>&lt;20%</span>
         </div>
       </div>
       <div id="day-modal-area"></div>
     </div>
-
-    <!-- HABITS -->
     <div class="section" id="tab-habits">
       <div class="g p14 mb8">
         <div class="slabel">ПРИВЫЧКИ</div>
@@ -283,8 +252,6 @@ canvas{display:block;width:100%!important}
         </div>
       </div>
     </div>
-
-    <!-- FINANCE -->
     <div class="section" id="tab-finance">
       <div class="two-col">
         <div class="g p12">
@@ -296,26 +263,26 @@ canvas{display:block;width:100%!important}
               <button class="chip" id="cur-usd" onclick="setCur('USD',this)" style="padding:2px 7px;font-size:10px">USD</button>
             </div>
           </div>
-          <div class="bc-spent" id="bc-spent">₴0</div>
-          <div style="font-size:10px;color:var(--text2)" id="bc-total-lbl">/ ₴0</div>
+          <div class="bc-spent" id="bc-spent">0</div>
+          <div style="font-size:10px;color:var(--text2)" id="bc-total-lbl">/ 0</div>
           <div class="bc-bar"><div class="bc-fill" id="bc-fill" style="width:0%"></div></div>
-          <div style="font-size:11px" id="bc-left">Остаток: ₴0</div>
+          <div style="font-size:11px" id="bc-left">Остаток: 0</div>
           <div class="divider"></div>
           <div class="lbl">Бюджет UAH</div><input class="inp inp-sm mb8" type="number" id="budget-uah" placeholder="50000" oninput="saveBudget()">
           <div class="lbl">Бюджет USD</div><input class="inp inp-sm mb8" type="number" id="budget-usd" placeholder="1200" oninput="saveBudget()">
-          <div class="lbl">Курс USD→UAH</div><input class="inp inp-sm" type="number" id="usd-rate" placeholder="41.5" oninput="saveBudget()">
+          <div class="lbl">Курс USD-UAH</div><input class="inp inp-sm" type="number" id="usd-rate" placeholder="41.5" oninput="saveBudget()">
         </div>
         <div class="g p12">
           <div class="slabel">ФИКС. ТРАТЫ</div>
           <div id="fc-list" style="max-height:150px;overflow-y:auto;margin-bottom:8px"></div>
           <div class="row mb8">
             <input class="inp inp-sm" id="fc-name" placeholder="Название" style="flex:2">
-            <input class="inp inp-sm" id="fc-amt" type="number" placeholder="₴" style="flex:1">
+            <input class="inp inp-sm" id="fc-amt" type="number" placeholder="UAH" style="flex:1">
             <button class="btn-pri" onclick="addFixed()" style="padding:5px 9px">+</button>
           </div>
           <div style="display:flex;justify-content:space-between;align-items:center;padding-top:8px;border-top:1px solid var(--bord)">
             <span style="font-size:10px;color:var(--text2)">Итого</span>
-            <span style="font-size:13px;font-weight:600" id="fc-total">₴0</span>
+            <span style="font-size:13px;font-weight:600" id="fc-total">0</span>
           </div>
         </div>
       </div>
@@ -333,8 +300,6 @@ canvas{display:block;width:100%!important}
         </div>
       </div>
     </div>
-
-    <!-- GOALS -->
     <div class="section" id="tab-goals">
       <div class="chip-row" id="goal-filters">
         <button class="chip act" onclick="setGF('all',this)">Все</button>
@@ -366,8 +331,6 @@ canvas{display:block;width:100%!important}
         <button class="btn-pri" style="width:100%" onclick="addGoal()">+ Добавить цель</button>
       </div>
     </div>
-
-    <!-- TODO -->
     <div class="section" id="tab-todo">
       <div class="todo-cols">
         <div class="g p12 mb8">
@@ -385,11 +348,11 @@ canvas{display:block;width:100%!important}
             <input class="inp" id="t-text" placeholder="Новая задача..." style="flex:1;min-width:120px">
             <input class="inp inp-sm" id="t-date" type="date" style="width:128px">
             <select class="inp inp-sm" id="t-cat" style="width:96px">
-              <option value="work">💼 Работа</option>
-              <option value="home">🏠 Дом</option>
-              <option value="routine">🔄 Рутина</option>
-              <option value="personal">👤 Личное</option>
-              <option value="other">📌 Другое</option>
+              <option value="work">Работа</option>
+              <option value="home">Дом</option>
+              <option value="routine">Рутина</option>
+              <option value="personal">Личное</option>
+              <option value="other">Другое</option>
             </select>
             <button class="btn-pri" onclick="addTask()" style="padding:7px 10px">+</button>
           </div>
@@ -411,8 +374,6 @@ canvas{display:block;width:100%!important}
         </div>
       </div>
     </div>
-
-    <!-- STATS -->
     <div class="section" id="tab-stats">
       <div class="g p12 mb8">
         <div class="slabel">ОБЗОР ДНЕЙ</div>
@@ -423,146 +384,72 @@ canvas{display:block;width:100%!important}
         <div id="cat-stats"></div>
       </div>
     </div>
-
   </div>
 </div>
-
 <nav class="bottom-nav">
-  <button class="bn-item active" id="bn-days" onclick="sw('days')">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-    <span class="bn-label">Дни</span>
-  </button>
-  <button class="bn-item" id="bn-habits" onclick="sw('habits')">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-    <span class="bn-label">Привычки</span>
-  </button>
-  <button class="bn-item" id="bn-finance" onclick="sw('finance')">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-    <span class="bn-label">Финансы</span>
-  </button>
-  <button class="bn-item" id="bn-goals" onclick="sw('goals')">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-    <span class="bn-label">Цели</span>
-  </button>
-  <button class="bn-item" id="bn-todo" onclick="sw('todo')">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><polyline points="3,6 4,7 6,5"/><polyline points="3,12 4,13 6,11"/><polyline points="3,18 4,19 6,17"/></svg>
-    <span class="bn-label">Задачи</span>
-  </button>
-  <button class="bn-item" id="bn-stats" onclick="sw('stats')">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-    <span class="bn-label">Стат.</span>
-  </button>
+  <button class="bn-item active" id="bn-days" onclick="sw('days')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span class="bn-label">Дни</span></button>
+  <button class="bn-item" id="bn-habits" onclick="sw('habits')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><span class="bn-label">Привычки</span></button>
+  <button class="bn-item" id="bn-finance" onclick="sw('finance')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><span class="bn-label">Финансы</span></button>
+  <button class="bn-item" id="bn-goals" onclick="sw('goals')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg><span class="bn-label">Цели</span></button>
+  <button class="bn-item" id="bn-todo" onclick="sw('todo')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><polyline points="3,6 4,7 6,5"/><polyline points="3,12 4,13 6,11"/><polyline points="3,18 4,19 6,17"/></svg><span class="bn-label">Задачи</span></button>
+  <button class="bn-item" id="bn-stats" onclick="sw('stats')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="bn-label">Стат.</span></button>
 </nav>
 </div>
-
-<script>
-// ══════════════════════════════
-// SUPABASE
-// ══════════════════════════════
-const { createClient } = supabase;
-const sb = createClient(
-  'https://fnjwwlzqlyzhlsopbcsh.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZuand3bHpxbHl6aGxzb3BiY3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyODI1MTksImV4cCI6MjA5Njg1ODUxOX0.WjWrndLTUzvWdeegTZpxFqwWVazuMwJvu-mO0QXnSu4'
-);
-
-let currentUser = null;
-
-// ══════════════════════════════
-// AUTH
-// ══════════════════════════════
-let authMode = 'login';
-
-function setAuthTab(mode, btn) {
-  authMode = mode;
-  document.querySelectorAll('.auth-tab').forEach(b => b.classList.remove('act'));
-  btn.classList.add('act');
-  document.querySelector('.auth-btn').textContent = mode === 'login' ? 'Войти' : 'Зарегистрироваться';
-  document.getElementById('auth-err').textContent = '';
-}
-
-async function authAction() {
-  const email = document.getElementById('auth-email').value.trim();
-  const pass = document.getElementById('auth-pass').value;
-  const errEl = document.getElementById('auth-err');
-  errEl.textContent = '';
-  if (!email || !pass) { errEl.textContent = 'Введи email и пароль'; return; }
-  const btn = document.querySelector('.auth-btn');
-  btn.textContent = '...'; btn.disabled = true;
-  let res;
-  if (authMode === 'login') {
-    res = await sb.auth.signInWithPassword({ email, password: pass });
-  } else {
-    res = await sb.auth.signUp({ email, password: pass });
-  }
-  btn.disabled = false;
-  btn.textContent = authMode === 'login' ? 'Войти' : 'Зарегистрироваться';
-  if (res.error) { errEl.textContent = res.error.message; return; }
-  if (authMode === 'signup' && !res.data.session) {
-    errEl.style.color = '#6ee7b7';
-    errEl.textContent = 'Проверь email — нужно подтвердить аккаунт'; return;
-  }
-}
-
-async function logout() {
-  await sb.auth.signOut();
-}
-
-// ══════════════════════════════
-// INIT
-// ══════════════════════════════
-function showAuth() {
-  document.getElementById('loading').style.display = 'none';
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('auth-screen').style.display = 'flex';
-}
-
-async function showApp(user) {
-  currentUser = user;
-  document.getElementById('loading').style.display = 'none';
-  document.getElementById('auth-screen').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-  await loadAll();
-  renderGrid();
-}
-
-// Сначала проверяем текущую сессию напрямую
-(async () => {
-  try {
-    const { data: { session } } = await sb.auth.getSession();
-    if (session) {
-      await showApp(session.user);
-    } else {
-      showAuth();
-    }
-  } catch(e) {
-    console.error('Session check failed:', e);
-    showAuth();
-  }
-})();
-
-// Слушаем изменения (логин/логаут)
-sb.auth.onAuthStateChange(async (event, session) => {
-  if (event === 'SIGNED_IN' && session) {
-    await showApp(session.user);
-  } else if (event === 'SIGNED_OUT') {
-    currentUser = null;
-    document.getElementById('app').style.display = 'none';
-    document.getElementById('auth-screen').style.display = 'flex';
-  }
-});
-
-// ══════════════════════════════
-// SHARED
-// ══════════════════════════════
+</body>
+</html><script>
+const SURL='https://fnjwwlzqlyzhlsopbcsh.supabase.co';
+const SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZuand3bHpxbHl6aGxzb3BiY3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyODI1MTksImV4cCI6MjA5Njg1ODUxOX0.WjWrndLTUzvWdeegTZpxFqwWVazuMwJvu-mO0QXnSu4';
 const MR=['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
 const MG=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
 const DOW=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
 const SECTIONS=['days','habits','finance','goals','todo','stats'];
 const toKey=d=>d.toISOString().slice(0,10);
 const today=()=>toKey(new Date());
-const svgCheck=(color)=>`<svg width="8" height="8" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-const uid=()=>currentUser.id;
+const chk=(c)=>`<svg width="8" height="8" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="${c}" stroke-width="2" stroke-linecap="round"/></svg>`;
+const CATS_DAY=[{id:'work',name:'Работа',color:'#a78bfa'},{id:'study',name:'Учёба',color:'#fb923c'},{id:'tasks',name:'Дела',color:'#f472b6'}];
+const EXP_CATS=[{id:'food',name:'Еда',color:'#a78bfa'},{id:'transport',name:'Транспорт',color:'#fb923c'},{id:'entertainment',name:'Досуг',color:'#f472b6'},{id:'health',name:'Здоровье',color:'#34d399'},{id:'other',name:'Другое',color:'#60a5fa'}];
+const TODO_CATS={work:{l:'Работа',c:'#a78bfa',e:'W'},home:{l:'Дом',c:'#fb923c',e:'H'},routine:{l:'Рутина',c:'#34d399',e:'R'},personal:{l:'Личное',c:'#60a5fa',e:'P'},other:{l:'Другое',c:'#f472b6',e:'O'}};
+const GPL={month:'Месяц',quarter:'Квартал',year:'Год',custom:'Свой'};
+const GPC={month:'#a78bfa',quarter:'#fb923c',year:'#34d399',custom:'#60a5fa'};
 
+let sb=null, user=null, selPeriod=3, modalDate=null;
+let goalFilter='all', selGP='month', todoTab='active', todoCat='all';
+let cache={days:{},habits:[],habitLogs:{},fin:{budget_uah:0,budget_usd:0,rate:41.5,currency:'UAH',fixed_costs:[]},expenses:{},goals:[],todos:[],shopping:[]};
+let authMode='login';
+
+// AUTH
+function setAuthMode(m,btn){
+  authMode=m;
+  document.querySelectorAll('.auth-tab').forEach(b=>b.classList.remove('act'));
+  btn.classList.add('act');
+  document.getElementById('auth-btn').textContent=m==='login'?'Войти':'Зарегистрироваться';
+  document.getElementById('auth-msg').textContent='';
+}
+async function doAuth(){
+  const email=document.getElementById('auth-email').value.trim();
+  const pass=document.getElementById('auth-pass').value;
+  const msg=document.getElementById('auth-msg');
+  const btn=document.getElementById('auth-btn');
+  if(!email||!pass){msg.style.color='#f87171';msg.textContent='Введи email и пароль';return;}
+  btn.disabled=true;btn.textContent='...';msg.textContent='';
+  try{
+    let res;
+    if(authMode==='login'){res=await sb.auth.signInWithPassword({email,password:pass});}
+    else{res=await sb.auth.signUp({email,password:pass});}
+    if(res.error)throw res.error;
+    if(authMode==='signup'&&!res.data.session){
+      msg.style.color='#34d399';
+      msg.textContent='Проверь email — нужно подтвердить аккаунт';
+      btn.disabled=false;btn.textContent='Зарегистрироваться';return;
+    }
+  }catch(e){
+    msg.style.color='#f87171';msg.textContent=e.message||'Ошибка';
+    btn.disabled=false;btn.textContent=authMode==='login'?'Войти':'Зарегистрироваться';
+  }
+}
+async function doLogout(){await sb.auth.signOut();}
+
+// NAVIGATION
 function sw(t){
   SECTIONS.forEach(n=>{
     ['sb-','bn-'].forEach(p=>{const el=document.getElementById(p+n);if(el)el.classList.toggle('active',n===t);});
@@ -574,75 +461,12 @@ function sw(t){
   if(t==='goals')renderGoals();
   if(t==='todo'){renderCF();renderTasks();renderShop();}
 }
-SECTIONS.filter(n=>n!=='days').forEach(n=>{const el=document.getElementById('tab-'+n);if(el)el.style.display='none';});
 
-// ══════════════════════════════
-// LOCAL CACHE (быстрый UI)
-// ══════════════════════════════
-let cache = {
-  days: {},      // date -> {cats}
-  habits: [],    // [{id,name}]
-  habitLogs: {}, // habitId -> {date->bool}
-  finSettings: {budget_uah:0,budget_usd:0,rate:41.5,currency:'UAH',fixed_costs:[]},
-  expenses: {},  // date -> {cats}
-  goals: [],
-  todos: [],
-  shopping: [],
-  period: 3,
-  goalFilter: 'all',
-  todoTab: 'active',
-  todoCat: 'all',
-};
-
-async function loadAll() {
-  if(!currentUser) return;
-  const uid = currentUser.id;
-  const [days, habits, habitLogs, finS, expenses, goals, todos, shopping] = await Promise.all([
-    sb.from('days').select('*').eq('user_id', uid),
-    sb.from('habits').select('*').eq('user_id', uid).order('created_at'),
-    sb.from('habit_logs').select('*').eq('user_id', uid),
-    sb.from('finance_settings').select('*').eq('user_id', uid).single(),
-    sb.from('expenses').select('*').eq('user_id', uid),
-    sb.from('goals').select('*').eq('user_id', uid).order('created_at'),
-    sb.from('todos').select('*').eq('user_id', uid).order('created_at'),
-    sb.from('shopping').select('*').eq('user_id', uid).order('created_at'),
-  ]);
-  // days
-  cache.days = {};
-  (days.data||[]).forEach(r => { cache.days[r.date] = {cats: r.cats, dbId: r.id}; });
-  // habits
-  cache.habits = habits.data || [];
-  // habit logs
-  cache.habitLogs = {};
-  (habitLogs.data||[]).forEach(r => {
-    if(!cache.habitLogs[r.habit_id]) cache.habitLogs[r.habit_id] = {};
-    cache.habitLogs[r.habit_id][r.date] = {done: r.done, dbId: r.id};
-  });
-  // finance
-  if(finS.data) cache.finSettings = finS.data;
-  // expenses
-  cache.expenses = {};
-  (expenses.data||[]).forEach(r => { cache.expenses[r.date] = {cats: r.cats, dbId: r.id}; });
-  // goals
-  cache.goals = (goals.data||[]).map(r => ({...r, tasks: r.tasks||[]}));
-  // todos
-  cache.todos = todos.data || [];
-  // shopping
-  cache.shopping = shopping.data || [];
-}
-
-// ══════════════════════════════
 // DAYS
-// ══════════════════════════════
-const CATS_DAY=[{id:'work',name:'Работа',color:'#a78bfa'},{id:'study',name:'Учёба',color:'#fb923c'},{id:'tasks',name:'Дела',color:'#f472b6'}];
-let modalDate=null;
-let selPeriod=3;
-
 function setPeriod(m,btn){selPeriod=m;document.querySelectorAll('#tab-days .chip').forEach(b=>b.classList.remove('act'));btn.classList.add('act');renderGrid();}
 function scCls(a){if(a===null)return '';if(a>=80)return 's80';if(a>=60)return 's60';if(a>=40)return 's40';if(a>=20)return 's20';return 's0';}
 function avgClr(a){if(a>=80)return '#a78bfa';if(a>=60)return '#818cf8';if(a>=40)return '#f472b6';if(a>=20)return '#fb923c';return '#f87171';}
 function calcAvg(dd){if(!dd||!dd.cats)return null;const v=CATS_DAY.map(c=>Number(dd.cats[c.id])||0);return Math.round(v.reduce((a,b)=>a+b,0)/v.length);}
-
 function renderGrid(){
   const g=document.getElementById('life-grid');if(!g)return;g.innerHTML='';
   const td=today(),start=new Date();start.setDate(1);
@@ -666,21 +490,24 @@ function renderGrid(){
     bl.appendChild(gr);g.appendChild(bl);
   }
 }
-
 function openDayModal(key,d,m,y){
   modalDate=key;const dd=cache.days[key]||{};
   const area=document.getElementById('day-modal-area');
-  area.innerHTML='<div class="dmodal"><div class="dm-date">'+MR[m]+' '+y+'</div><div class="dm-title">'+d+' '+MG[m]+'</div><div id="mcats"></div><div class="avg-row"><span style="font-size:10px;color:var(--text2)">Средний %</span><span class="avg-val" id="avgv">—</span></div><div class="row"><button class="btn-ghost" onclick="closeDM()" style="flex:1">Отмена</button><button class="btn-pri" onclick="saveDay()" style="flex:1;margin-left:4px">Сохранить</button></div></div>';
-  const wrap=document.getElementById('mcats');
+  let html='<div class="dmodal"><div class="dm-date">'+MR[m]+' '+y+'</div><div class="dm-title">'+d+' '+MG[m]+'</div>';
   CATS_DAY.forEach(cat=>{
     const val=(dd.cats&&dd.cats[cat.id]!==undefined)?dd.cats[cat.id]:'';
-    const row=document.createElement('div');row.className='cat-row';
-    row.innerHTML='<span class="cat-lbl" style="color:'+cat.color+'">'+cat.name+'</span><input class="cat-inp" type="number" min="0" max="100" id="ci_'+cat.id+'" value="'+val+'" placeholder="—" oninput="updAvg()"><span style="font-size:11px;color:var(--text2)">%</span>';
-    wrap.appendChild(row);
+    html+='<div class="cat-row"><span class="cat-lbl" style="color:'+cat.color+'">'+cat.name+'</span><input class="cat-inp" type="number" min="0" max="100" id="ci_'+cat.id+'" value="'+val+'" placeholder="0" oninput="updAvg()"><span style="font-size:11px;color:var(--text2)">%</span></div>';
   });
+  html+='<div class="avg-row"><span style="font-size:10px;color:var(--text2)">Средний %</span><span class="avg-val" id="avgv">0%</span></div>';
+  html+='<div class="row"><button class="btn-ghost" onclick="closeDM()" style="flex:1">Отмена</button><button class="btn-pri" onclick="saveDay()" style="flex:1;margin-left:4px">Сохранить</button></div></div>';
+  area.innerHTML=html;
   updAvg();area.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
-function updAvg(){const v=CATS_DAY.map(c=>{const el=document.getElementById('ci_'+c.id);return el?Math.min(100,Math.max(0,Number(el.value)||0)):0;});const avg=Math.round(v.reduce((a,b)=>a+b,0)/v.length);const el=document.getElementById('avgv');if(el){el.textContent=avg+'%';el.style.color=avgClr(avg);}}
+function updAvg(){
+  const v=CATS_DAY.map(c=>{const el=document.getElementById('ci_'+c.id);return el?Math.min(100,Math.max(0,Number(el.value)||0)):0;});
+  const avg=Math.round(v.reduce((a,b)=>a+b,0)/v.length);
+  const el=document.getElementById('avgv');if(el){el.textContent=avg+'%';el.style.color=avgClr(avg);}
+}
 function closeDM(){document.getElementById('day-modal-area').innerHTML='';modalDate=null;}
 async function saveDay(){
   if(!modalDate)return;
@@ -688,17 +515,15 @@ async function saveDay(){
   const existing=cache.days[modalDate];
   if(existing&&existing.dbId){
     await sb.from('days').update({cats}).eq('id',existing.dbId);
-  } else {
-    const {data}=await sb.from('days').insert({user_id:uid(),date:modalDate,cats}).select().single();
-    if(data) cache.days[modalDate]={cats,dbId:data.id};
+  }else{
+    const {data}=await sb.from('days').insert({user_id:user.id,date:modalDate,cats}).select().single();
+    if(data)cache.days[modalDate]={cats,dbId:data.id};
   }
-  if(cache.days[modalDate]) cache.days[modalDate].cats=cats;
+  if(cache.days[modalDate])cache.days[modalDate].cats=cats;
   closeDM();renderGrid();
 }
 
-// ══════════════════════════════
 // HABITS
-// ══════════════════════════════
 function renderHabits(){
   const el=document.getElementById('habits-list');if(!el)return;el.innerHTML='';
   if(!cache.habits.length){el.innerHTML='<div class="empty-state">Нет привычек</div>';return;}
@@ -731,63 +556,48 @@ function renderHabits(){
 }
 async function toggleH(hid,key){
   if(!cache.habitLogs[hid])cache.habitLogs[hid]={};
-  const existing=cache.habitLogs[hid][key];
-  const newDone=!(existing&&existing.done);
-  if(existing&&existing.dbId){
-    await sb.from('habit_logs').update({done:newDone}).eq('id',existing.dbId);
-    cache.habitLogs[hid][key].done=newDone;
-  } else {
-    const {data}=await sb.from('habit_logs').upsert({user_id:uid(),habit_id:hid,date:key,done:newDone},{onConflict:'habit_id,date'}).select().single();
-    cache.habitLogs[hid][key]={done:newDone,dbId:data?.id};
-  }
+  const ex=cache.habitLogs[hid][key];
+  const newDone=!(ex&&ex.done);
+  const {data}=await sb.from('habit_logs').upsert({user_id:user.id,habit_id:hid,date:key,done:newDone},{onConflict:'habit_id,date'}).select().single();
+  cache.habitLogs[hid][key]={done:newDone,dbId:data?.id};
   renderHabits();
 }
 async function addHabit(){
   const inp=document.getElementById('new-habit'),name=inp.value.trim();if(!name)return;
-  const {data}=await sb.from('habits').insert({user_id:uid(),name}).select().single();
+  const {data}=await sb.from('habits').insert({user_id:user.id,name}).select().single();
   if(data){cache.habits.push(data);inp.value='';renderHabits();}
 }
 async function removeHabit(id){
   await sb.from('habits').delete().eq('id',id);
-  cache.habits=cache.habits.filter(h=>h.id!==id);
-  delete cache.habitLogs[id];
-  renderHabits();
+  cache.habits=cache.habits.filter(h=>h.id!==id);delete cache.habitLogs[id];renderHabits();
 }
 
-// ══════════════════════════════
 // FINANCE
-// ══════════════════════════════
-const EXP_CATS=[{id:'food',name:'Еда',color:'#a78bfa'},{id:'transport',name:'Транспорт',color:'#fb923c'},{id:'entertainment',name:'Досуг',color:'#f472b6'},{id:'health',name:'Здоровье',color:'#34d399'},{id:'other',name:'Другое',color:'#60a5fa'}];
-let budgetSaveTimer=null;
-
+let budTimer=null;
 function initFinance(){
-  const fs=cache.finSettings;
-  document.getElementById('de-date').value=today();
-  document.getElementById('budget-uah').value=fs.budget_uah||'';
-  document.getElementById('budget-usd').value=fs.budget_usd||'';
-  document.getElementById('usd-rate').value=fs.rate||41.5;
-  const now=new Date();document.getElementById('bc-month-lbl').textContent=MR[now.getMonth()]+' '+now.getFullYear();
+  const fs=cache.fin;
+  const de=document.getElementById('de-date');if(de)de.value=today();
+  const bu=document.getElementById('budget-uah');if(bu)bu.value=fs.budget_uah||'';
+  const bud=document.getElementById('budget-usd');if(bud)bud.value=fs.budget_usd||'';
+  const ur=document.getElementById('usd-rate');if(ur)ur.value=fs.rate||41.5;
+  const now=new Date();const ml=document.getElementById('bc-month-lbl');if(ml)ml.textContent=MR[now.getMonth()]+' '+now.getFullYear();
   ['uah','usd'].forEach(c=>{const el=document.getElementById('cur-'+c);if(el)el.classList.toggle('act',(fs.currency||'UAH')===c.toUpperCase());});
   renderFixed();renderDailyCats();updateBudgetUI();drawChart();
 }
 function setCur(c,btn){
-  cache.finSettings.currency=c;
+  cache.fin.currency=c;
   ['cur-uah','cur-usd'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('act');});
-  btn.classList.add('act');
-  updateBudgetUI();
-  saveFinSettings();
+  btn.classList.add('act');updateBudgetUI();saveFinSettings();
 }
 function saveBudget(){
-  cache.finSettings.budget_uah=Number(document.getElementById('budget-uah').value)||0;
-  cache.finSettings.budget_usd=Number(document.getElementById('budget-usd').value)||0;
-  cache.finSettings.rate=Number(document.getElementById('usd-rate').value)||41.5;
-  updateBudgetUI();
-  clearTimeout(budgetSaveTimer);
-  budgetSaveTimer=setTimeout(saveFinSettings,800);
+  cache.fin.budget_uah=Number(document.getElementById('budget-uah').value)||0;
+  cache.fin.budget_usd=Number(document.getElementById('budget-usd').value)||0;
+  cache.fin.rate=Number(document.getElementById('usd-rate').value)||41.5;
+  updateBudgetUI();clearTimeout(budTimer);budTimer=setTimeout(saveFinSettings,800);
 }
 async function saveFinSettings(){
-  const fs=cache.finSettings;
-  await sb.from('finance_settings').upsert({user_id:uid(),budget_uah:fs.budget_uah,budget_usd:fs.budget_usd,rate:fs.rate,currency:fs.currency,fixed_costs:fs.fixed_costs},{onConflict:'user_id'});
+  const fs=cache.fin;
+  await sb.from('finance_settings').upsert({user_id:user.id,budget_uah:fs.budget_uah,budget_usd:fs.budget_usd,rate:fs.rate,currency:fs.currency,fixed_costs:fs.fixed_costs},{onConflict:'user_id'});
 }
 function getMonthSpent(){
   const now=new Date(),y=now.getFullYear(),m=now.getMonth();let t=0;
@@ -795,7 +605,7 @@ function getMonthSpent(){
   return t;
 }
 function updateBudgetUI(){
-  const fs=cache.finSettings,rate=fs.rate||41.5,cur=fs.currency||'UAH';
+  const fs=cache.fin,rate=fs.rate||41.5,cur=fs.currency||'UAH';
   const spentUAH=getMonthSpent();
   const budget=cur==='UAH'?fs.budget_uah||0:fs.budget_usd||0;
   const spent=cur==='UAH'?spentUAH:spentUAH/rate;
@@ -809,33 +619,26 @@ function updateBudgetUI(){
 }
 function renderFixed(){
   const list=document.getElementById('fc-list');if(!list)return;list.innerHTML='';
-  const fixed=cache.finSettings.fixed_costs||[];let total=0;
-  fixed.forEach((item,i)=>{
-    total+=item.amt;const div=document.createElement('div');div.className='fc-item';
-    div.innerHTML='<span class="fc-name">'+item.name+'</span><span class="fc-amt">₴'+item.amt.toLocaleString()+'</span><button class="fc-del" onclick="delFixed('+i+')">×</button>';
-    list.appendChild(div);
-  });
-  const ft=document.getElementById('fc-total');if(ft)ft.textContent='₴'+total.toLocaleString();
+  const fixed=cache.fin.fixed_costs||[];let total=0;
+  fixed.forEach((item,i)=>{total+=item.amt;const div=document.createElement('div');div.className='fc-item';div.innerHTML='<span class="fc-name">'+item.name+'</span><span class="fc-amt">'+item.amt.toLocaleString()+'</span><button class="fc-del" onclick="delFixed('+i+')">x</button>';list.appendChild(div);});
+  const ft=document.getElementById('fc-total');if(ft)ft.textContent=total.toLocaleString();
 }
 async function addFixed(){
   const name=document.getElementById('fc-name').value.trim(),amt=Number(document.getElementById('fc-amt').value)||0;
   if(!name||!amt)return;
-  if(!cache.finSettings.fixed_costs)cache.finSettings.fixed_costs=[];
-  cache.finSettings.fixed_costs.push({name,amt});
+  if(!cache.fin.fixed_costs)cache.fin.fixed_costs=[];
+  cache.fin.fixed_costs.push({name,amt});
   document.getElementById('fc-name').value='';document.getElementById('fc-amt').value='';
   renderFixed();updateBudgetUI();await saveFinSettings();
 }
-async function delFixed(i){
-  cache.finSettings.fixed_costs.splice(i,1);
-  renderFixed();updateBudgetUI();await saveFinSettings();
-}
+async function delFixed(i){cache.fin.fixed_costs.splice(i,1);renderFixed();updateBudgetUI();await saveFinSettings();}
 function renderDailyCats(){
   const dateKey=document.getElementById('de-date').value||today();
   const dayData=(cache.expenses[dateKey]&&cache.expenses[dateKey].cats)||{};
   const wrap=document.getElementById('de-cats');if(!wrap)return;wrap.innerHTML='';
   EXP_CATS.forEach(cat=>{
     const val=dayData[cat.id]||'';const row=document.createElement('div');row.className='de-cat-row';
-    row.innerHTML='<div class="de-dot" style="background:'+cat.color+'"></div><span class="de-name">'+cat.name+'</span><input class="de-inp" type="number" min="0" id="de_'+cat.id+'" value="'+val+'" placeholder="0"><span style="font-size:10px;color:var(--text2);margin-left:2px">₴</span>';
+    row.innerHTML='<div class="de-dot" style="background:'+cat.color+'"></div><span class="de-name">'+cat.name+'</span><input class="de-inp" type="number" min="0" id="de_'+cat.id+'" value="'+val+'" placeholder="0"><span style="font-size:10px;color:var(--text2);margin-left:2px">UAH</span>';
     wrap.appendChild(row);
   });
 }
@@ -843,17 +646,11 @@ document.addEventListener('change',e=>{if(e.target.id==='de-date')renderDailyCat
 async function saveExpenses(){
   const dateKey=document.getElementById('de-date').value||today();
   const cats={};EXP_CATS.forEach(c=>{const el=document.getElementById('de_'+c.id);cats[c.id]=el?Number(el.value)||0:0;});
-  const existing=cache.expenses[dateKey];
-  if(existing&&existing.dbId){
-    await sb.from('expenses').update({cats}).eq('id',existing.dbId);
-  } else {
-    const {data}=await sb.from('expenses').insert({user_id:uid(),date:dateKey,cats}).select().single();
-    if(data)cache.expenses[dateKey]={cats,dbId:data.id};
-  }
+  const ex=cache.expenses[dateKey];
+  if(ex&&ex.dbId){await sb.from('expenses').update({cats}).eq('id',ex.dbId);}
+  else{const {data}=await sb.from('expenses').insert({user_id:user.id,date:dateKey,cats}).select().single();if(data)cache.expenses[dateKey]={cats,dbId:data.id};}
   if(cache.expenses[dateKey])cache.expenses[dateKey].cats=cats;
   updateBudgetUI();drawChart();
-  const btn=document.querySelector('#tab-finance .btn-pri');
-  if(btn){const o=btn.textContent;btn.textContent='Сохранено ✓';btn.style.color='#6ee7b7';setTimeout(()=>{btn.textContent=o;btn.style.color='';},1200);}
 }
 function drawChart(){
   const canvas=document.getElementById('exp-chart');if(!canvas)return;
@@ -874,16 +671,10 @@ function drawChart(){
     if(day.d===1||day.d%7===0){ctx.fillStyle='rgba(255,255,255,.2)';ctx.font='7px system-ui';ctx.fillText(day.d,x,95-2);}
   });
   const leg=document.getElementById('chart-legend');
-  if(leg){const tot=days.reduce((s,d)=>s+d.t,0);const avgD=days.filter(d=>d.t>0);leg.innerHTML='<span style="font-size:10px;color:rgba(255,255,255,.4)">Итого: ₴'+Math.round(tot).toLocaleString()+'</span>'+(avgD.length?'<span style="font-size:10px;color:rgba(255,255,255,.25)">Ср/день: ₴'+Math.round(tot/avgD.length).toLocaleString()+'</span>':'');}
+  if(leg){const tot=days.reduce((s,d)=>s+d.t,0);const avgD=days.filter(d=>d.t>0);leg.innerHTML='<span style="font-size:10px;color:rgba(255,255,255,.4)">Итого: '+Math.round(tot).toLocaleString()+'</span>'+(avgD.length?'<span style="font-size:10px;color:rgba(255,255,255,.25)"> Ср/день: '+Math.round(tot/avgD.length).toLocaleString()+'</span>':'');}
 }
 
-// ══════════════════════════════
 // GOALS
-// ══════════════════════════════
-const GPL={month:'Месяц',quarter:'Квартал',year:'Год',custom:'Свой'};
-const GPC={month:'#a78bfa',quarter:'#fb923c',year:'#34d399',custom:'#60a5fa'};
-let selGP='month',goalFilter='all';
-
 document.getElementById('gperiod-sel').addEventListener('click',e=>{
   const btn=e.target.closest('[data-p]');if(!btn)return;
   document.querySelectorAll('#gperiod-sel .chip').forEach(b=>b.classList.remove('act'));btn.classList.add('act');selGP=btn.dataset.p;
@@ -894,12 +685,10 @@ document.getElementById('gperiod-sel').addEventListener('click',e=>{
   else dl.value='';
 });
 (()=>{const el=document.getElementById('g-deadline');if(el){const now=new Date();el.value=toKey(new Date(now.getFullYear(),now.getMonth()+1,0));}})();
-
 function setGF(f,btn){goalFilter=f;document.querySelectorAll('#goal-filters .chip').forEach(b=>b.classList.remove('act'));btn.classList.add('act');renderGoals();}
 function calcGP(g){const auto=g.tasks&&g.tasks.length?Math.round(g.tasks.filter(t=>t.done).length/g.tasks.length*100):0;return(g.tasks&&g.tasks.length)?(g.manual_pct!==undefined?Math.round((g.manual_pct+auto)/2):auto):(g.manual_pct||0);}
 function isOver(g){return calcGP(g)<100&&g.deadline&&g.deadline<today();}
 function gClr(p){if(p>=100)return '#34d399';if(p>=60)return '#a78bfa';if(p>=30)return '#fb923c';return '#f472b6';}
-
 function renderGoals(){
   const list=document.getElementById('goals-list');if(!list)return;list.innerHTML='';
   const filtered=cache.goals.filter(g=>{
@@ -912,21 +701,18 @@ function renderGoals(){
     const card=document.createElement('div');card.className='goal-card'+(pct>=100?' gc-done':over?' gc-over':'');
     const col=GPC[g.period]||'#60a5fa';
     let tHtml='<div class="gc-tasks-wrap">';
-    if(g.tasks&&g.tasks.length){g.tasks.forEach((t,ti)=>{tHtml+='<div class="gc-task"><div class="tcheck'+(t.done?' on':'')+'" onclick="toggleGT(\''+g.id+'\','+ti+')">'+(t.done?svgCheck('#a78bfa'):'')+'</div><span class="ttext'+(t.done?' done':'")>'+t.text+'</span><button class="tdel" onclick="delGT(\''+g.id+'\','+ti+')">×</button></div>';});}
+    if(g.tasks&&g.tasks.length)g.tasks.forEach((t,ti)=>{tHtml+='<div class="gc-task"><div class="tcheck'+(t.done?' on':'')+'" onclick="toggleGT(\''+g.id+'\','+ti+')">'+(t.done?chk('#a78bfa'):'')+'</div><span class="ttext'+(t.done?' done':'")>'+t.text+'</span><button class="tdel" onclick="delGT(\''+g.id+'\','+ti+')">x</button></div>';});
     tHtml+='<div style="display:flex;gap:5px;margin-top:5px"><input class="inp inp-sm" id="gti_'+g.id+'" placeholder="+ подзадача" style="flex:1"><button class="btn-pri" onclick="addGT(\''+g.id+'\')" style="padding:4px 8px">+</button></div></div>';
-    card.innerHTML='<div class="gc-top"><span class="gc-title">'+g.title+'</span><button class="gc-del-btn" onclick="delGoal(\''+g.id+'\')">×</button></div><div class="gc-meta"><span class="pill" style="color:'+col+';border-color:'+col+'44;background:'+col+'18">'+GPL[g.period]+'</span>'+(pct>=100?'<span class="pill" style="color:#34d399;border-color:#34d39944;background:#34d39918">✓ Готово</span>':over?'<span class="pill" style="color:#f87171;border-color:#f8717144;background:#f8717118">Просрочено</span>':'')+(g.category?'<span style="font-size:10px;color:var(--text2)">'+g.category+'</span>':'')+(g.deadline?'<span style="font-size:10px;color:var(--text2)">до '+g.deadline+'</span>':'')+'</div><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><span style="font-size:10px;color:var(--text2)">Прогресс</span><span style="font-size:12px;font-weight:600;color:'+gClr(pct)+'">'+pct+'%</span></div><div class="gc-bar"><div class="gc-bar-fill" style="width:'+pct+'%;background:'+gClr(pct)+'"></div></div><div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><input class="cat-inp" type="number" min="0" max="100" id="gpi_'+g.id+'" value="'+(g.manual_pct||0)+'" style="width:48px"><span style="font-size:10px;color:var(--text2)">% вручную</span><button class="btn-ghost" onclick="saveGPct(\''+g.id+'\')" style="padding:3px 7px;font-size:10px">ок</button></div>'+tHtml;
+    card.innerHTML='<div class="gc-top"><span class="gc-title">'+g.title+'</span><button class="gc-del-btn" onclick="delGoal(\''+g.id+'\')">x</button></div><div class="gc-meta"><span class="pill" style="color:'+col+';border-color:'+col+'44;background:'+col+'18">'+GPL[g.period]+'</span>'+(pct>=100?'<span class="pill" style="color:#34d399;border-color:#34d39944;background:#34d39918">Готово</span>':over?'<span class="pill" style="color:#f87171;border-color:#f8717144">Просрочено</span>':'')+(g.category?'<span style="font-size:10px;color:var(--text2)">'+g.category+'</span>':'')+(g.deadline?'<span style="font-size:10px;color:var(--text2)">до '+g.deadline+'</span>':'')+'</div><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><span style="font-size:10px;color:var(--text2)">Прогресс</span><span style="font-size:12px;font-weight:600;color:'+gClr(pct)+'">'+pct+'%</span></div><div class="gc-bar"><div class="gc-bar-fill" style="width:'+pct+'%;background:'+gClr(pct)+'"></div></div><div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><input class="cat-inp" type="number" min="0" max="100" id="gpi_'+g.id+'" value="'+(g.manual_pct||0)+'" style="width:48px"><span style="font-size:10px;color:var(--text2)">% вручную</span><button class="btn-ghost" onclick="saveGPct(\''+g.id+'\')" style="padding:3px 7px;font-size:10px">ок</button></div>'+tHtml;
     list.appendChild(card);
   });
 }
 async function addGoal(){
   const title=document.getElementById('g-title').value.trim();if(!title)return;
-  const {data}=await sb.from('goals').insert({user_id:uid(),title,period:selGP,deadline:document.getElementById('g-deadline').value||null,category:document.getElementById('g-cat').value.trim()||null,manual_pct:0,tasks:[]}).select().single();
+  const {data}=await sb.from('goals').insert({user_id:user.id,title,period:selGP,deadline:document.getElementById('g-deadline').value||null,category:document.getElementById('g-cat').value.trim()||null,manual_pct:0,tasks:[]}).select().single();
   if(data){cache.goals.push({...data,tasks:[]});document.getElementById('g-title').value='';document.getElementById('g-cat').value='';renderGoals();}
 }
-async function delGoal(id){
-  await sb.from('goals').delete().eq('id',id);
-  cache.goals=cache.goals.filter(g=>g.id!==id);renderGoals();
-}
+async function delGoal(id){await sb.from('goals').delete().eq('id',id);cache.goals=cache.goals.filter(g=>g.id!==id);renderGoals();}
 async function saveGPct(id){
   const el=document.getElementById('gpi_'+id);if(!el)return;
   const pct=Math.min(100,Math.max(0,Number(el.value)||0));
@@ -938,8 +724,7 @@ async function addGT(gid){
   const text=el.value.trim();if(!text)return;
   const g=cache.goals.find(g=>g.id===gid);if(!g)return;
   if(!g.tasks)g.tasks=[];g.tasks.push({text,done:false});
-  await sb.from('goals').update({tasks:g.tasks}).eq('id',gid);
-  renderGoals();
+  await sb.from('goals').update({tasks:g.tasks}).eq('id',gid);renderGoals();
 }
 async function toggleGT(gid,ti){
   const g=cache.goals.find(g=>g.id===gid);if(!g)return;
@@ -948,22 +733,16 @@ async function toggleGT(gid,ti){
 }
 async function delGT(gid,ti){
   const g=cache.goals.find(g=>g.id===gid);if(!g)return;
-  g.tasks.splice(ti,1);
-  await sb.from('goals').update({tasks:g.tasks}).eq('id',gid);renderGoals();
+  g.tasks.splice(ti,1);await sb.from('goals').update({tasks:g.tasks}).eq('id',gid);renderGoals();
 }
 
-// ══════════════════════════════
 // TODO
-// ══════════════════════════════
-const TODO_CATS={work:{label:'Работа',color:'#a78bfa',e:'💼'},home:{label:'Дом',color:'#fb923c',e:'🏠'},routine:{label:'Рутина',color:'#34d399',e:'🔄'},personal:{label:'Личное',color:'#60a5fa',e:'👤'},other:{label:'Другое',color:'#f472b6',e:'📌'}};
-let todoTab='active',todoCat='all';
-
-function setTT(tab,btn){todoTab=tab;document.querySelectorAll('#tab-todo .todo-cols .chip').forEach(b=>b.classList.remove('act'));btn.classList.add('act');renderTasks();}
+function setTT(tab,btn){todoTab=tab;document.querySelectorAll('#tab-todo .chip').forEach(b=>b.classList.remove('act'));btn.classList.add('act');renderTasks();}
 function setCF(cat){todoCat=cat;renderCF();renderTasks();}
 function renderCF(){
   const wrap=document.getElementById('cat-filters');if(!wrap)return;wrap.innerHTML='';
   const all=document.createElement('button');all.className='chip'+(todoCat==='all'?' act':'');all.textContent='Все';all.onclick=()=>setCF('all');wrap.appendChild(all);
-  Object.entries(TODO_CATS).forEach(([k,v])=>{const btn=document.createElement('button');btn.className='chip'+(todoCat===k?' act':'');btn.textContent=v.e+' '+v.label;btn.onclick=()=>setCF(k);wrap.appendChild(btn);});
+  Object.entries(TODO_CATS).forEach(([k,v])=>{const btn=document.createElement('button');btn.className='chip'+(todoCat===k?' act':'');btn.textContent=v.l;btn.onclick=()=>setCF(k);wrap.appendChild(btn);});
 }
 function renderTasks(){
   const list=document.getElementById('task-list');if(!list)return;list.innerHTML='';
@@ -986,7 +765,7 @@ function renderTasks(){
       let dl='',dc='t-date';
       if(task.date){if(task.date<td&&!task.done){dl=task.date;dc='t-date ov';}else if(task.date===td&&!task.done){dl='сегодня';dc='t-date td';}else dl=task.date;}
       const div=document.createElement('div');div.className='task-item'+(task.done?' done-item':'');
-      div.innerHTML='<div class="t-check'+(task.done?' on':'')+'" onclick="toggleTask(\''+task.id+'\')">'+(task.done?svgCheck('#a78bfa'):'')+'</div><span class="t-text'+(task.done?' done':'")>'+task.text+'</span><div style="display:flex;align-items:center;gap:4px;flex-shrink:0"><div class="t-dot" style="background:'+cat.color+'"></div>'+(dl?'<span class="'+dc+'">'+dl+'</span>':'')+'<button class="t-del" onclick="delTask(\''+task.id+'\')">×</button></div>';
+      div.innerHTML='<div class="t-check'+(task.done?' on':'')+'" onclick="toggleTask(\''+task.id+'\')">'+(task.done?chk('#a78bfa'):'')+'</div><span class="t-text'+(task.done?' done':'")>'+task.text+'</span><div style="display:flex;align-items:center;gap:4px;flex-shrink:0"><div class="t-dot" style="background:'+cat.c+'"></div>'+(dl?'<span class="'+dc+'">'+dl+'</span>':'')+'<button class="t-del" onclick="delTask(\''+task.id+'\')">x</button></div>';
       g.appendChild(div);rendered++;
     });
     list.appendChild(g);
@@ -996,7 +775,7 @@ function renderTasks(){
 }
 async function addTask(){
   const text=document.getElementById('t-text').value.trim();if(!text)return;
-  const {data}=await sb.from('todos').insert({user_id:uid(),text,date:document.getElementById('t-date').value||null,cat:document.getElementById('t-cat').value,done:false}).select().single();
+  const {data}=await sb.from('todos').insert({user_id:user.id,text,date:document.getElementById('t-date').value||null,cat:document.getElementById('t-cat').value,done:false}).select().single();
   if(data){cache.todos.push(data);document.getElementById('t-text').value='';document.getElementById('t-date').value='';renderTasks();}
 }
 async function toggleTask(id){
@@ -1004,23 +783,21 @@ async function toggleTask(id){
   t.done=!t.done;await sb.from('todos').update({done:t.done}).eq('id',id);renderTasks();
 }
 async function delTask(id){
-  await sb.from('todos').delete().eq('id',id);
-  cache.todos=cache.todos.filter(t=>t.id!==id);renderTasks();
+  await sb.from('todos').delete().eq('id',id);cache.todos=cache.todos.filter(t=>t.id!==id);renderTasks();
 }
-
 function renderShop(){
   const list=document.getElementById('shop-list');if(!list)return;list.innerHTML='';
   if(!cache.shopping.length){list.innerHTML='<div class="empty-state" style="text-align:center">Список пуст</div>';}
   cache.shopping.forEach(item=>{
     const div=document.createElement('div');div.className='shop-item'+(item.bought?' bought':'');
-    div.innerHTML='<div class="s-check'+(item.bought?' on':'')+'" onclick="toggleShop(\''+item.id+'\')">'+(item.bought?svgCheck('#34d399'):'')+'</div><span class="s-name">'+item.name+'</span>'+(item.qty?'<span class="s-qty">'+item.qty+'</span>':'')+'<button class="s-del" onclick="delShop(\''+item.id+'\')">×</button>';
+    div.innerHTML='<div class="s-check'+(item.bought?' on':'')+'" onclick="toggleShop(\''+item.id+'\')">'+(item.bought?chk('#34d399'):'')+'</div><span class="s-name">'+item.name+'</span>'+(item.qty?'<span class="s-qty">'+item.qty+'</span>':'')+'<button class="s-del" onclick="delShop(\''+item.id+'\')">x</button>';
     list.appendChild(div);
   });
   const cnt=document.getElementById('shop-count');if(cnt)cnt.textContent=cache.shopping.filter(s=>s.bought).length+' из '+cache.shopping.length+' куплено';
 }
 async function addShop(){
   const name=document.getElementById('s-name').value.trim();if(!name)return;
-  const {data}=await sb.from('shopping').insert({user_id:uid(),name,qty:document.getElementById('s-qty').value.trim()||null,bought:false}).select().single();
+  const {data}=await sb.from('shopping').insert({user_id:user.id,name,qty:document.getElementById('s-qty').value.trim()||null,bought:false}).select().single();
   if(data){cache.shopping.push(data);document.getElementById('s-name').value='';document.getElementById('s-qty').value='';renderShop();}
 }
 async function toggleShop(id){
@@ -1028,28 +805,90 @@ async function toggleShop(id){
   s.bought=!s.bought;await sb.from('shopping').update({bought:s.bought}).eq('id',id);renderShop();
 }
 async function delShop(id){
-  await sb.from('shopping').delete().eq('id',id);
-  cache.shopping=cache.shopping.filter(s=>s.id!==id);renderShop();
+  await sb.from('shopping').delete().eq('id',id);cache.shopping=cache.shopping.filter(s=>s.id!==id);renderShop();
 }
 async function clearBought(){
-  const bought=cache.shopping.filter(s=>s.bought).map(s=>s.id);
-  if(!bought.length)return;
-  await sb.from('shopping').delete().in('id',bought);
-  cache.shopping=cache.shopping.filter(s=>!s.bought);renderShop();
+  const ids=cache.shopping.filter(s=>s.bought).map(s=>s.id);
+  if(!ids.length)return;
+  await sb.from('shopping').delete().in('id',ids);cache.shopping=cache.shopping.filter(s=>!s.bought);renderShop();
 }
 
-// ══════════════════════════════
 // STATS
-// ══════════════════════════════
 function renderStats(){
   const td=today();
   const scored=Object.entries(cache.days).filter(([k,v])=>v.cats&&k<=td);
   const avgs=scored.map(([,v])=>calcAvg(v));
   const total=scored.length,overall=total?Math.round(avgs.reduce((a,b)=>a+b,0)/avgs.length):0;
   const great=avgs.filter(a=>a>=80).length,good=avgs.filter(a=>a>=60&&a<80).length,mid=avgs.filter(a=>a>=40&&a<60).length,low=avgs.filter(a=>a<40).length;
-  const sg=document.getElementById('stats-grid');if(sg)sg.innerHTML='<div class="sm"><div class="sm-n">'+total+'</div><div class="sm-l">дней</div></div><div class="sm"><div class="sm-n" style="color:#a78bfa">'+overall+'%</div><div class="sm-l">средний</div></div><div class="sm"><div class="sm-n" style="color:#34d399">'+great+'</div><div class="sm-l">≥80%</div></div><div class="sm"><div class="sm-n" style="color:#818cf8">'+good+'</div><div class="sm-l">60–79%</div></div><div class="sm"><div class="sm-n" style="color:#f472b6">'+mid+'</div><div class="sm-l">40–59%</div></div><div class="sm"><div class="sm-n" style="color:#fb923c">'+low+'</div><div class="sm-l"><40%</div></div>';
-  const cs=document.getElementById('cat-stats');if(cs){cs.innerHTML='';CATS_DAY.forEach(cat=>{const vals=scored.map(([,v])=>Number(v.cats[cat.id])||0);const avg=vals.length?Math.round(vals.reduce((a,b)=>a+b,0)/vals.length):0;const row=document.createElement('div');row.className='bar-row';row.innerHTML='<span style="font-size:11px;color:'+cat.color+';width:56px;flex-shrink:0">'+cat.name+'</span><div class="bar-track"><div class="bar-fill" style="width:'+avg+'%;background:'+cat.color+'"></div></div><span class="bar-val" style="color:'+cat.color+'">'+avg+'%</span>';cs.appendChild(row);});}
+  const sg=document.getElementById('stats-grid');
+  if(sg)sg.innerHTML='<div class="sm"><div class="sm-n">'+total+'</div><div class="sm-l">дней</div></div><div class="sm"><div class="sm-n" style="color:#a78bfa">'+overall+'%</div><div class="sm-l">средний</div></div><div class="sm"><div class="sm-n" style="color:#34d399">'+great+'</div><div class="sm-l">>=80%</div></div><div class="sm"><div class="sm-n" style="color:#818cf8">'+good+'</div><div class="sm-l">60-79%</div></div><div class="sm"><div class="sm-n" style="color:#f472b6">'+mid+'</div><div class="sm-l">40-59%</div></div><div class="sm"><div class="sm-n" style="color:#fb923c">'+low+'</div><div class="sm-l"><40%</div></div>';
+  const cs=document.getElementById('cat-stats');
+  if(cs){cs.innerHTML='';CATS_DAY.forEach(cat=>{const vals=scored.map(([,v])=>Number(v.cats[cat.id])||0);const avg=vals.length?Math.round(vals.reduce((a,b)=>a+b,0)/vals.length):0;const row=document.createElement('div');row.className='bar-row';row.innerHTML='<span style="font-size:11px;color:'+cat.color+';width:56px;flex-shrink:0">'+cat.name+'</span><div class="bar-track"><div class="bar-fill" style="width:'+avg+'%;background:'+cat.color+'"></div></div><span class="bar-val" style="color:'+cat.color+'">'+avg+'%</span>';cs.appendChild(row);});}
 }
+
+// LOAD DATA
+async function loadAll(){
+  if(!user)return;
+  const uid=user.id;
+  const [days,habits,hlogs,finS,expenses,goals,todos,shopping]=await Promise.all([
+    sb.from('days').select('*').eq('user_id',uid),
+    sb.from('habits').select('*').eq('user_id',uid).order('created_at'),
+    sb.from('habit_logs').select('*').eq('user_id',uid),
+    sb.from('finance_settings').select('*').eq('user_id',uid).maybeSingle(),
+    sb.from('expenses').select('*').eq('user_id',uid),
+    sb.from('goals').select('*').eq('user_id',uid).order('created_at'),
+    sb.from('todos').select('*').eq('user_id',uid).order('created_at'),
+    sb.from('shopping').select('*').eq('user_id',uid).order('created_at'),
+  ]);
+  cache.days={};(days.data||[]).forEach(r=>{cache.days[r.date]={cats:r.cats,dbId:r.id};});
+  cache.habits=habits.data||[];
+  cache.habitLogs={};(hlogs.data||[]).forEach(r=>{if(!cache.habitLogs[r.habit_id])cache.habitLogs[r.habit_id]={};cache.habitLogs[r.habit_id][r.date]={done:r.done,dbId:r.id};});
+  if(finS.data)cache.fin=finS.data;
+  cache.expenses={};(expenses.data||[]).forEach(r=>{cache.expenses[r.date]={cats:r.cats,dbId:r.id};});
+  cache.goals=(goals.data||[]).map(r=>({...r,tasks:r.tasks||[]}));
+  cache.todos=todos.data||[];
+  cache.shopping=shopping.data||[];
+}
+
+// INIT APP
+async function initApp(u){
+  user=u;
+  document.getElementById('loading').style.display='none';
+  document.getElementById('auth-screen').style.display='none';
+  await loadAll();
+  document.getElementById('app').style.display='block';
+  SECTIONS.filter(n=>n!=='days').forEach(n=>{const el=document.getElementById('tab-'+n);if(el)el.style.display='none';});
+  renderGrid();
+}
+
+// BOOT
+(async()=>{
+  try{
+    sb=supabase.createClient(SURL,SKEY);
+    const {data:{session}}=await sb.auth.getSession();
+    if(session){
+      await initApp(session.user);
+    }else{
+      document.getElementById('loading').style.display='none';
+      document.getElementById('auth-screen').style.display='flex';
+    }
+    sb.auth.onAuthStateChange(async(event,session)=>{
+      if(event==='SIGNED_IN'&&session&&!user){
+        document.getElementById('loading').innerHTML='<div class="spin"></div><span>Загрузка данных...</span>';
+        document.getElementById('loading').style.display='flex';
+        document.getElementById('auth-screen').style.display='none';
+        await initApp(session.user);
+      }else if(event==='SIGNED_OUT'){
+        user=null;cache={days:{},habits:[],habitLogs:{},fin:{budget_uah:0,budget_usd:0,rate:41.5,currency:'UAH',fixed_costs:[]},expenses:{},goals:[],todos:[],shopping:[]};
+        document.getElementById('app').style.display='none';
+        document.getElementById('auth-screen').style.display='flex';
+      }
+    });
+  }catch(e){
+    document.getElementById('loading').innerHTML='<span style="color:#f87171">Ошибка: '+e.message+'</span>';
+    console.error(e);
+  }
+})();
 
 document.addEventListener('keydown',e=>{
   if(e.key!=='Enter')return;
@@ -1058,7 +897,7 @@ document.addEventListener('keydown',e=>{
   else if(id==='s-name')addShop();
   else if(id==='new-habit')addHabit();
   else if(id==='g-title')addGoal();
-  else if(id==='auth-pass')authAction();
+  else if(id==='auth-pass')doAuth();
 });
 </script>
 </body>
